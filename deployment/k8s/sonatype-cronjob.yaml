@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sonatype-reporter
+spec:
+  schedule: "0 0 * * *"
+  # schedule: "*/2 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: sonatype-reporter
+              image: ayush1136/sonatype-reporter:{{check-latest-release}}
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - secretRef:
+                    name: sonatype-reporter-secret
